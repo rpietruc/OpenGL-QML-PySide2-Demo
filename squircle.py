@@ -27,39 +27,20 @@ class SquircleRenderer(QObject):
     @Slot()
     def paint(self):
         try:
-            print("drawing")
+            print("drawing({})".format(self._t))
             if self._shader_program is None:
                 self._shader_program = QOpenGLShaderProgram()
-                self._shader_program.addShaderFromSourceCode(QOpenGLShader.Vertex,
-                                                            "attribute highp vec4 vertices;"
-                                                            "varying highp vec2 coords;"
-                                                            "void main() {"
-                                                            "    gl_Position = vertices;"
-                                                            "    coords = vertices.xy;"
-                                                            "}")
-
-                self._shader_program.addShaderFromSourceCode(QOpenGLShader.Fragment,
-                                                            "uniform lowp float t;"
-                                                            "varying highp vec2 coords;"
-                                                            "void main() {"
-                                                            "    lowp float i = 1. - (pow(abs(coords.x), 4.) + pow(abs(coords.y), 4.));"
-                                                            "    i = smoothstep(t - 0.8, t + 0.8, i);"
-                                                            "    i = floor(i * 20.) / 20.;"
-                                                            "    gl_FragColor = vec4(coords * .5 + .5, i, i);"
-                                                            "}")
-
+                self._shader_program.addShaderFromSourceFile(QOpenGLShader.Vertex, 'shaders/vertex.glsl')
+                self._shader_program.addShaderFromSourceFile(QOpenGLShader.Fragment, 'shaders/fragment.glsl')
                 self._shader_program.bindAttributeLocation('vertices', 0)
                 self._shader_program.link()
 
             self._shader_program.bind()
             self._shader_program.enableAttributeArray(0)
 
-            values = np.array([
-                (-1.0, -1.0),
-                (1.0, -1.0),
-                (-1.0, 1.0),
-                (1.0, 1.0)
-            ], dtype=ctypes.c_float)
+            x0, x1 = (-1.0, 1.0)
+            y0, y1 = (-1.0, 1.0)
+            values = np.array([ (x0, y0), (x1, y0), (x0, y1), (x1, y1) ], dtype=ctypes.c_float)
 
             self._shader_program.setAttributeArray(0, GL_FLOAT, values.tobytes(), 2)
             self._shader_program.setUniformValue(0, self._t)
