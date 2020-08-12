@@ -49,7 +49,7 @@
 ****************************************************************************/
 
 //! [1]
-import QtQuick 2.5
+import QtQuick 2.15
 import OpenGLUnderQML 1.0
 
 Item {

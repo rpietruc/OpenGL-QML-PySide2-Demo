@@ -62,7 +62,7 @@ class SquircleRenderer(QObject):
             ], dtype=ctypes.c_float)
 
             self._shader_program.setAttributeArray(0, GL_FLOAT, values.tobytes(), 2)
-            self._shader_program.setUniformValue('t', self._t)
+            self._shader_program.setUniformValue(0, self._t)
 
             gl = self._window.openglContext().functions()
             gl.glViewport(0, 0, self._viewport_size.width(), self._viewport_size.height())
